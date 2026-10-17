@@ -1,3 +1,4 @@
+
 name: Automated Deployment Pipeline
 
 on:
@@ -40,6 +41,23 @@ jobs:
     steps:
       - name: Checkout Code
         uses: actions/checkout@v4
+
+      - name: Check Docker Credentials
+        env:
+          DOCKERHUB_USERNAME: ${{ secrets.DOCKERHUB_USERNAME }}
+          DOCKERHUB_TOKEN: ${{ secrets.DOCKERHUB_TOKEN }}
+        run: |
+          if [ -z "$DOCKERHUB_USERNAME" ]; then
+            echo "ERROR: Docker username secret is missing"
+            exit 1
+          fi
+
+          if [ -z "$DOCKERHUB_TOKEN" ]; then
+            echo "ERROR: Docker token secret is missing"
+            exit 1
+          fi
+
+          echo "Both Docker secrets are available"
 
       - name: Log In to Docker Hub
         uses: docker/login-action@v3
